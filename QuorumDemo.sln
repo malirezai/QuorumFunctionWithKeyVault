@@ -1,0 +1,27 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuorumDemo.Core", "QuorumDemo.Core\QuorumDemo.Core.csproj", "{7A5C59C2-14CE-41E5-8EAC-28390EFEE0EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuorumDemo.Functions", "QuorumDemo.Functions\QuorumDemo.Functions.csproj", "{6654E9AC-2B1D-461E-B7E3-0A2CFB45176A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCC14FD6-5113-4AA3-85A3-A3308F61CB12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCC14FD6-5113-4AA3-85A3-A3308F61CB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCC14FD6-5113-4AA3-85A3-A3308F61CB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCC14FD6-5113-4AA3-85A3-A3308F61CB12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A5C59C2-14CE-41E5-8EAC-28390EFEE0EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5C59C2-14CE-41E5-8EAC-28390EFEE0EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A5C59C2-14CE-41E5-8EAC-28390EFEE0EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A5C59C2-14CE-41E5-8EAC-28390EFEE0EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6654E9AC-2B1D-461E-B7E3-0A2CFB45176A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6654E9AC-2B1D-461E-B7E3-0A2CFB45176A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6654E9AC-2B1D-461E-B7E3-0A2CFB45176A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6654E9AC-2B1D-461E-B7E3-0A2CFB45176A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
