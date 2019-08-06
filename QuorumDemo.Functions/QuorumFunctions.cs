@@ -23,7 +23,7 @@ namespace QuorumDemo.Functions
         public string functionName {get;set;}
         public List<string> privateFor {get;set;}
         public object[] inputParams { get;set;}
-
+        
     }   
 
     /*
