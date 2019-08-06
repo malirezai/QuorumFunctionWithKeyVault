@@ -5,13 +5,22 @@ This project contains An Azure Function sample for use with Quorum on [Azure Blo
 
 It demonstrates two important concepts that are important in Enterprise blockchain deployments 
 
-1. Private Key being managed by an HSM (Azure Key Vault) with the signing operations being done IN the HSM, and the key not being accessible to the application
+1. Private Key being managed by an HSM (Azure Key Vault) with the signing operations being done IN the HSM, and the key not being accessible to the application. This is facilitated through [Nethereum.Signer.AzureKeyVault](https://www.nuget.org/packages/Nethereum.Signer.AzureKeyVault/)
 
 2. Creating and calling smart contracts with Quorum and Nethereum, using the ExternalAccount object with a reference to our private key (or ethereum account) that is held in KeyVault
 
 3. A project containing a "QuorumTransactionManager" helper class that handles deployment and calling smart contracts. The class contains methods that do a variety of things asynchronously. The class is meant to be generic in that it works for ANY smart contract, so long as you supply the appropriate parameters.
 
 With this sample, we demonstrate a scenario where the details of the Private Key are stored securely in the cloud and we create our Ethereum account on the fly from the details of that key. 
+
+## Project references:
+
+The following nuget packages are referenced: 
+
+- [Nethereum.Quorum](https://www.nuget.org/packages/Nethereum.Quorum/)
+- [Nethereum.Accounts](https://www.nuget.org/packages/Nethereum.Accounts/)
+- [Nethereum.Signer.AzureKeyVault](https://www.nuget.org/packages/Nethereum.Signer.AzureKeyVault/)
+- [Polly.NET](https://www.nuget.org/packages/Polly/) for resilient APIs
 
 ## Prerequisites
 
