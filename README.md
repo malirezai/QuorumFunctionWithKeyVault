@@ -1,7 +1,9 @@
 # Introduction 
 
 ## What is this sample? 
-This project contains An Azure Function sample for use with Quorum on [Azure Blockchain Service](https://azure.microsoft.com/en-ca/services/blockchain-service/), or any other Ethereum RPC endpoint.  
+This project contains An Azure Function sample for use with Quorum on [Azure Blockchain Service](https://azure.microsoft.com/en-ca/services/blockchain-service/), or any other Ethereum RPC endpoint.
+
+This sample is not meant for production use, it is a sample.
 
 It demonstrates two important concepts that are important in Enterprise blockchain deployments 
 
