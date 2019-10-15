@@ -125,12 +125,12 @@ namespace QuorumDemo.Core
                 web3.SetPrivateRequestParameters(PrivateFor); 
             }
 
+            await externalAccount.InitialiseAsync();
+            externalAccount.InitialiseDefaultTransactionManager(web3.Client);
+
             //--- get transaction count to set nonce ---// 
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending());
 
-            await externalAccount.InitialiseAsync();
-            externalAccount.InitialiseDefaultTransactionManager(web3.Client);
-   
             try
             {
                 var gasDeploy = await web3.Eth.DeployContract.EstimateGasAsync(
