@@ -112,25 +112,30 @@ namespace QuorumDemo.Core
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateContractWithExternalAccountAsync(ContractInfo contractInfo, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateContractWithExternalAccountAsync(ILogger log, ContractInfo contractInfo, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
                 throw new Exception("web3 handler has not been set - please call SetWeb3Handler First");
             }
+            log.LogInformation("web3 isn't null");
 
             if (PrivateFor != null && PrivateFor?.Count != 0)
             {
+                log.LogInformation("this is a private transaction");
                 web3.ClearPrivateForRequestParameters();
                 web3.SetPrivateRequestParameters(PrivateFor); 
             }
 
+
             await externalAccount.InitialiseAsync();
+            log.LogInformation("externalAccount.InitialiseAsync() called");
             externalAccount.InitialiseDefaultTransactionManager(web3.Client);
+            log.LogInformation("externalAccount.InitialiseDefaultTransactionManager(web3.Client) called");
 
             //--- get transaction count to set nonce ---// 
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending());
-
+            log.LogInformation("web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending()) called");
             try
             {
                 var gasDeploy = await web3.Eth.DeployContract.EstimateGasAsync(
@@ -140,6 +145,7 @@ namespace QuorumDemo.Core
                     values: inputParams == null ? new object[]{} : inputParams);
 
                 Console.WriteLine("Creating new contract and waiting for address");
+                log.LogInformation("Creating new contract and waiting for address");
 
                 // Gas estimate is usually low - with private quorum we don't need to worry about gas so lets just multiply it by 5.
                 var realGas = new HexBigInteger(gasDeploy.Value*5);
@@ -157,8 +163,9 @@ namespace QuorumDemo.Core
                     new HexBigInteger(0)
                 );
 
-                var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
 
+                var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
+                log.LogInformation("Called SendTransactionAndWaitForReceiptAsync with result of " + transactionReceipt.ContractAddress);
                 Console.WriteLine(transactionReceipt.ContractAddress);
 
                 return new TransactionReturnInfo
@@ -323,7 +330,7 @@ namespace QuorumDemo.Core
                 //Console.WriteLine("Nonce txInput Value: " + txCountNonce.Value );
                 
                 var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
-                
+
                 if (transactionReceipt != null)
                 {
                     Console.WriteLine($"Processed Transaction - txHash: {transactionReceipt.TransactionHash}");
@@ -349,13 +356,13 @@ namespace QuorumDemo.Core
             }
         }
 
-        public async Task<T> CallContractFunctionAsync<T>(string contractAddress, ContractInfo contractInfo, string functionName, Account account, object[] inputParams = null)
+        public async Task<T> CallContractFunctionAsync<T>(string contractAddress, ContractInfo contractInfo, string functionName, string accountAddress, object[] inputParams = null)
         {
             try{
 
                 var contract = web3.Eth.GetContract(contractInfo.ContractABI, contractAddress);
                 var function = contract.GetFunction(functionName);
-                return await function.CallAsync<T>(account.Address, null, null, inputParams);
+                return await function.CallAsync<T>(accountAddress, null, null, inputParams);
 
             } catch(Exception e){
                 Console.WriteLine(e.Message);
