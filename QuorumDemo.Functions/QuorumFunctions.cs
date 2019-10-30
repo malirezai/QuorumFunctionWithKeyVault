@@ -18,12 +18,12 @@ namespace QuorumDemo.Functions
      * Function Body - defines the Contract Address, Function Name, Input Paramters, and PrivateFor strings
      */
 
-    public class QuorumTransactionInput{
+    public class QuorumTransactionInput
+    {
         public string contractAddress {get;set;}
         public string functionName {get;set;}
         public List<string> privateFor {get;set;}
-        public object[] inputParams { get;set;}
-        
+        public object[] inputParams { get;set;}    
     }   
 
     /*
@@ -38,46 +38,37 @@ namespace QuorumDemo.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject<QuorumTransactionInput>(requestBody);
             
             var privateFor = data?.privateFor;
-
             var inputParams = data?.inputParams;
 
             var contractInfo = new ContractInfo();
-
             var client = new HttpClient();
 
             var filejson = await client.GetStringAsync(Environment.GetEnvironmentVariable("CONTRACT_JSON_BLOB_URL", EnvironmentVariableTarget.Process));
-
             dynamic _file = JsonConvert.DeserializeObject(filejson);
 
             var abi = _file?.abi;
-
             var byteCode = _file?.bytecode?.Value;
 
             contractInfo.ContractABI = JsonConvert.SerializeObject(abi);
-
             contractInfo.ContractByteCode = byteCode;
 
             var keyVaultURI = Environment.GetEnvironmentVariable("KEYVAULT_PRIVATEKEY_URI", EnvironmentVariableTarget.Process);
-
             var RPC = Environment.GetEnvironmentVariable("RPC", EnvironmentVariableTarget.Process);
 
             QuorumContractHelper.Instance.SetWeb3Handler(RPC);
 
             var appID = Environment.GetEnvironmentVariable("APP_ID", EnvironmentVariableTarget.Process);
-
             var appSecret = Environment.GetEnvironmentVariable("APP_SECRET", EnvironmentVariableTarget.Process);
 
             //var externalAccount = AccountHelper.BuildExternalSigner(log,keyVaultURI); 
             
             var externalAccount = AccountHelper.BuildExternalSignerWithToken(log,keyVaultURI,appID,appSecret); 
-
             var res = await QuorumContractHelper.Instance.CreateContractWithExternalAccountAsync(contractInfo, externalAccount, inputParams, privateFor);
 
             return res != null
@@ -94,7 +85,6 @@ namespace QuorumDemo.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -110,42 +100,34 @@ namespace QuorumDemo.Functions
             List<string> privateFor = data?.privateFor;
 
             var contractInfo = new ContractInfo();
-
             var client = new HttpClient();
 
             var filejson = await client.GetStringAsync(Environment.GetEnvironmentVariable("CONTRACT_JSON_BLOB_URL", EnvironmentVariableTarget.Process));
-
             dynamic _file = JsonConvert.DeserializeObject(filejson);
 
             var abi = _file?.abi;
-
             var byteCode = _file?.bytecode?.Value;
 
             contractInfo.ContractABI = JsonConvert.SerializeObject(abi);
-
             contractInfo.ContractByteCode = byteCode;
 
             var keyVaultURI = Environment.GetEnvironmentVariable("KEYVAULT_PRIVATEKEY_URI", EnvironmentVariableTarget.Process);
-
             var RPC = Environment.GetEnvironmentVariable("RPC", EnvironmentVariableTarget.Process);
 
             QuorumContractHelper.Instance.SetWeb3Handler(RPC);
 
             var appID = Environment.GetEnvironmentVariable("APP_ID", EnvironmentVariableTarget.Process);
-
             var appSecret = Environment.GetEnvironmentVariable("APP_SECRET", EnvironmentVariableTarget.Process);
 
             //var externalAccount = AccountHelper.BuildExternalSigner(log,keyVaultURI); 
             
             var externalAccount = AccountHelper.BuildExternalSignerWithToken(log,keyVaultURI,appID,appSecret); 
-
             var res = await QuorumContractHelper.Instance.CreateTransactionWithExternalAccountAsync(log,address, contractInfo, functionName, externalAccount, functionParams, privateFor);
 
             return res != null
                 ? (ActionResult)new OkObjectResult($"TXHash: {res.TransactionHash} \nBlockHash: {res.BlockHash} \nBlockNumber: {res.BlockNumber} \nContractAddress: {res.ContractAddress}")
                 : new BadRequestObjectResult("There was an issue submitting the transaction");
         }
-
     }
 
 
@@ -157,7 +139,6 @@ namespace QuorumDemo.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -173,11 +154,9 @@ namespace QuorumDemo.Functions
             List<string> privateFor = data?.privateFor;
 
             var contractInfo = new ContractInfo();
-
             var client = new HttpClient();
 
             var filejson = await client.GetStringAsync(Environment.GetEnvironmentVariable("CONTRACT_JSON_BLOB_URL", EnvironmentVariableTarget.Process));
-
             dynamic _file = JsonConvert.DeserializeObject(filejson);
 
             var abi = _file?.abi;
@@ -185,13 +164,11 @@ namespace QuorumDemo.Functions
             var byteCode = _file?.bytecode?.Value;
 
             contractInfo.ContractABI = JsonConvert.SerializeObject(abi);
-
             contractInfo.ContractByteCode = byteCode;
 
             var accountJSON = Environment.GetEnvironmentVariable("KEYVAULT_ACCOUNT1_URL", EnvironmentVariableTarget.Process);
             
             var pwd = Environment.GetEnvironmentVariable("KEYVAULT_ETH_PASSWORD", EnvironmentVariableTarget.Process);
-
             var RPC = Environment.GetEnvironmentVariable("RPC", EnvironmentVariableTarget.Process);
 
             QuorumContractHelper.Instance.SetWeb3Handler(RPC);
@@ -201,7 +178,6 @@ namespace QuorumDemo.Functions
                 ? (ActionResult)new OkObjectResult($"Called Contract at address: {address} \nWith Function: {functionName} \nWith input: {functionParams} \nResult: {res}")
                 : new BadRequestObjectResult("There was an issue submitting the transaction");
         }
-
     }
 
 }
