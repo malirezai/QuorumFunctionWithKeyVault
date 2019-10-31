@@ -63,18 +63,17 @@ namespace QuorumDemo.Functions
             var keyVaultURI = Environment.GetEnvironmentVariable("KEYVAULT_PRIVATEKEY_URI", EnvironmentVariableTarget.Process);
             var RPC = Environment.GetEnvironmentVariable("RPC", EnvironmentVariableTarget.Process);
 
-            log.LogInformation("Before setting web3 handler");
+
             QuorumContractHelper.Instance.SetWeb3Handler(RPC);
 
             var appID = Environment.GetEnvironmentVariable("APP_ID", EnvironmentVariableTarget.Process);
             var appSecret = Environment.GetEnvironmentVariable("APP_SECRET", EnvironmentVariableTarget.Process);
 
             var externalAccount = AccountHelper.BuildExternalSigner(log,keyVaultURI); 
-            log.LogInformation("Prior to building external signer");
             //var externalAccount = AccountHelper.BuildExternalSignerWithToken(log,keyVaultURI,appID,appSecret); 
-            log.LogInformation("after building external signer");
-            var res = await QuorumContractHelper.Instance.CreateContractWithExternalAccountAsync(log, contractInfo, externalAccount, inputParams, privateFor);
-            log.LogInformation("contract should be created");
+            
+            var res = await QuorumContractHelper.Instance.CreateContractWithExternalAccountAsync(contractInfo, externalAccount, inputParams, privateFor);
+
             return res != null
                 ? (ActionResult)new OkObjectResult($"TXHash: {res.TransactionHash} \nBlockHash: {res.BlockHash} \nBlockNumber: {res.BlockNumber} \nContractAddress: {res.ContractAddress}")
                 : new BadRequestObjectResult("There was an issue submitting the transaction");
@@ -126,7 +125,7 @@ namespace QuorumDemo.Functions
             var externalAccount = AccountHelper.BuildExternalSigner(log,keyVaultURI); 
             
             //var externalAccount = AccountHelper.BuildExternalSignerWithToken(log,keyVaultURI,appID,appSecret); 
-            var res = await QuorumContractHelper.Instance.CreateTransactionWithExternalAccountAsync(log,address, contractInfo, functionName, externalAccount, functionParams, privateFor);
+            var res = await QuorumContractHelper.Instance.CreateTransactionWithExternalAccountAsync(address, contractInfo, functionName, externalAccount, functionParams, privateFor);
 
             return res != null
                 ? (ActionResult)new OkObjectResult($"TXHash: {res.TransactionHash} \nBlockHash: {res.BlockHash} \nBlockNumber: {res.BlockNumber} \nContractAddress: {res.ContractAddress}")
@@ -184,6 +183,7 @@ namespace QuorumDemo.Functions
 
             var externalAccount = AccountHelper.BuildExternalSignerWithToken(log,keyVaultURI,appID,appSecret); 
             var res = await QuorumContractHelper.Instance.CallContractFunctionAsync<int>(address, contractInfo, functionName, externalAccount.Address,functionParams);
+            
             return res != null
                 ? (ActionResult)new OkObjectResult($"Called Contract at address: {address} \nWith Function: {functionName} \nWith input: {functionParams} \nResult: {res}")
                 : new BadRequestObjectResult("There was an issue submitting the transaction");

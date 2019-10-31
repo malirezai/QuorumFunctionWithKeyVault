@@ -112,30 +112,25 @@ namespace QuorumDemo.Core
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateContractWithExternalAccountAsync(ILogger log, ContractInfo contractInfo, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateContractWithExternalAccountAsync(ContractInfo contractInfo, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
                 throw new Exception("web3 handler has not been set - please call SetWeb3Handler First");
             }
-            log.LogInformation("web3 isn't null");
 
             if (PrivateFor != null && PrivateFor?.Count != 0)
             {
-                log.LogInformation("this is a private transaction");
                 web3.ClearPrivateForRequestParameters();
                 web3.SetPrivateRequestParameters(PrivateFor); 
             }
 
 
             await externalAccount.InitialiseAsync();
-            log.LogInformation("externalAccount.InitialiseAsync() called");
             externalAccount.InitialiseDefaultTransactionManager(web3.Client);
-            log.LogInformation("externalAccount.InitialiseDefaultTransactionManager(web3.Client) called");
 
             //--- get transaction count to set nonce ---// 
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending());
-            log.LogInformation("web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending()) called");
             try
             {
                 var gasDeploy = await web3.Eth.DeployContract.EstimateGasAsync(
@@ -145,7 +140,6 @@ namespace QuorumDemo.Core
                     values: inputParams == null ? new object[]{} : inputParams);
 
                 Console.WriteLine("Creating new contract and waiting for address");
-                log.LogInformation("Creating new contract and waiting for address");
 
                 // Gas estimate is usually low - with private quorum we don't need to worry about gas so lets just multiply it by 5.
                 var realGas = new HexBigInteger(gasDeploy.Value*5);
@@ -165,7 +159,6 @@ namespace QuorumDemo.Core
 
 
                 var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
-                log.LogInformation("Called SendTransactionAndWaitForReceiptAsync with result of " + transactionReceipt.ContractAddress);
                 Console.WriteLine(transactionReceipt.ContractAddress);
 
                 return new TransactionReturnInfo
@@ -183,7 +176,7 @@ namespace QuorumDemo.Core
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateTransactionAsync(ILogger log, string ContractAddress, ContractInfo contractInfo, string FunctionName, Account account, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateTransactionAsync(string ContractAddress, ContractInfo contractInfo, string FunctionName, Account account, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
@@ -242,7 +235,6 @@ namespace QuorumDemo.Core
                 txInput.Nonce = txCountNonce;
 
                 var supposedNextNonce = await account.NonceService.GetNextNonceAsync();
-                log.LogInformation("Nonce txInput Value: " + txCountNonce.Value + "\nNonceManager Value: " + txCount.Value);
                 Console.WriteLine("Nonce txInput Value: " + txCountNonce.Value + "\nNonceManager Value: " + txCount.Value);
                 
                 var transactionReceipt = await txManager.SendTransactionAndWaitForReceiptAsync(txInput, null);
@@ -276,12 +268,11 @@ namespace QuorumDemo.Core
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                log.LogError(e.Message);
                 return null;
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateTransactionWithExternalAccountAsync(ILogger log, string ContractAddress, ContractInfo contractInfo, string FunctionName, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateTransactionWithExternalAccountAsync(string ContractAddress, ContractInfo contractInfo, string FunctionName, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
@@ -312,8 +303,6 @@ namespace QuorumDemo.Core
             {
                 await externalAccount.InitialiseAsync();
                 externalAccount.InitialiseDefaultTransactionManager(web3.Client);
-                
-                log.LogInformation("External Account Address: " + externalAccount.Address);
             
                 //default RealGas
                 var realGas = new HexBigInteger(500000);
@@ -351,7 +340,6 @@ namespace QuorumDemo.Core
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                log.LogError(e.Message);
                 return null;
             }
         }
