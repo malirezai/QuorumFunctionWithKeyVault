@@ -125,12 +125,12 @@ namespace QuorumDemo.Core
                 web3.SetPrivateRequestParameters(PrivateFor); 
             }
 
-            //--- get transaction count to set nonce ---// 
-            var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending());
 
             await externalAccount.InitialiseAsync();
             externalAccount.InitialiseDefaultTransactionManager(web3.Client);
-   
+
+            //--- get transaction count to set nonce ---// 
+            var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(externalAccount.Address, BlockParameter.CreatePending());
             try
             {
                 var gasDeploy = await web3.Eth.DeployContract.EstimateGasAsync(
@@ -157,8 +157,8 @@ namespace QuorumDemo.Core
                     new HexBigInteger(0)
                 );
 
-                var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
 
+                var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
                 Console.WriteLine(transactionReceipt.ContractAddress);
 
                 return new TransactionReturnInfo
@@ -176,7 +176,7 @@ namespace QuorumDemo.Core
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateTransactionAsync(ILogger log, string ContractAddress, ContractInfo contractInfo, string FunctionName, Account account, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateTransactionAsync(string ContractAddress, ContractInfo contractInfo, string FunctionName, Account account, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
@@ -235,7 +235,6 @@ namespace QuorumDemo.Core
                 txInput.Nonce = txCountNonce;
 
                 var supposedNextNonce = await account.NonceService.GetNextNonceAsync();
-                log.LogInformation("Nonce txInput Value: " + txCountNonce.Value + "\nNonceManager Value: " + txCount.Value);
                 Console.WriteLine("Nonce txInput Value: " + txCountNonce.Value + "\nNonceManager Value: " + txCount.Value);
                 
                 var transactionReceipt = await txManager.SendTransactionAndWaitForReceiptAsync(txInput, null);
@@ -269,12 +268,11 @@ namespace QuorumDemo.Core
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                log.LogError(e.Message);
                 return null;
             }
         }
 
-        public async Task<TransactionReturnInfo> CreateTransactionWithExternalAccountAsync(ILogger log, string ContractAddress, ContractInfo contractInfo, string FunctionName, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
+        public async Task<TransactionReturnInfo> CreateTransactionWithExternalAccountAsync(string ContractAddress, ContractInfo contractInfo, string FunctionName, ExternalAccount externalAccount, object[] inputParams = null, List<string> PrivateFor = null)
         {
             if (web3 == null)
             {
@@ -305,8 +303,6 @@ namespace QuorumDemo.Core
             {
                 await externalAccount.InitialiseAsync();
                 externalAccount.InitialiseDefaultTransactionManager(web3.Client);
-                
-                log.LogInformation("External Account Address: " + externalAccount.Address);
             
                 //default RealGas
                 var realGas = new HexBigInteger(500000);
@@ -323,7 +319,7 @@ namespace QuorumDemo.Core
                 //Console.WriteLine("Nonce txInput Value: " + txCountNonce.Value );
                 
                 var transactionReceipt = await externalAccount.TransactionManager.SendTransactionAndWaitForReceiptAsync(txInput,null);
-                
+
                 if (transactionReceipt != null)
                 {
                     Console.WriteLine($"Processed Transaction - txHash: {transactionReceipt.TransactionHash}");
@@ -344,18 +340,17 @@ namespace QuorumDemo.Core
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                log.LogError(e.Message);
                 return null;
             }
         }
 
-        public async Task<T> CallContractFunctionAsync<T>(string contractAddress, ContractInfo contractInfo, string functionName, Account account, object[] inputParams = null)
+        public async Task<T> CallContractFunctionAsync<T>(string contractAddress, ContractInfo contractInfo, string functionName, string accountAddress, object[] inputParams = null)
         {
             try{
 
                 var contract = web3.Eth.GetContract(contractInfo.ContractABI, contractAddress);
                 var function = contract.GetFunction(functionName);
-                return await function.CallAsync<T>(account.Address, null, null, inputParams);
+                return await function.CallAsync<T>(accountAddress, null, null, inputParams);
 
             } catch(Exception e){
                 Console.WriteLine(e.Message);
